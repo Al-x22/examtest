@@ -1,3 +1,18 @@
-# ESI2023 - Session 8
+# ESI2023 - An exam example
 
-Session 8.2:  Microservices integration patterns - Event Driven Architecture 
+
+## 	Clone the repository: 
+```
+> git clone repo_name
+```
+
+## 	Navigate to the project directory: 
+```
+> cd <project name>
+```
+
+## Run Docker Desktop, then,	Run the following command to start Zookeeper and Kafka broker:  
+```
+>  docker compose up -d
+```
+

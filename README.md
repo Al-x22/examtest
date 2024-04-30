@@ -1,4 +1,4 @@
-# ESI2023 - An exam example
+# ESI - An exam example
 
 
 ## 	Clone the repository: 

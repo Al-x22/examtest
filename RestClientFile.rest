@@ -7,7 +7,7 @@ POST  http://localhost:8082/api/orders HTTP/1.1
 content-type: application/json
 
 {
-    "id": 128,
+    "id": 100,
     "userId": 1,
     "productId": 101,   
     "price": 100

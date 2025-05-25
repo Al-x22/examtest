@@ -1,5 +1,8 @@
 package com.esi.paymentservice.service;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -50,6 +53,18 @@ UserBalance userBalance = paymentRepository.findById(orderDto.getUserId()).get()
         kafkaTemplate.send("paymentTopic", orderDto);
       } 
 }
-/*  Task 3  */
+
+    public PaymentStatusResponse getPayment() {
+        return PaymentStatusResponse.builder().status("Correct").message( "Payment Service is running").build();
+    }
+
+    @Data
+    @AllArgsConstructor
+    @Builder
+    public  static class PaymentStatusResponse {
+        private String status;
+        private String message;
+    }
+    /*  Task 3  */
 }
 

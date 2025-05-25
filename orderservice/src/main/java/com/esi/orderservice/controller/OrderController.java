@@ -23,6 +23,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+
     @GetMapping("/orders")
     public List<OrderDto> getOrders() {
     return orderService.getAllOrders();
@@ -30,8 +31,12 @@ public class OrderController {
     
     @PostMapping("/orders")
     public ResponseEntity<String>  createOrder(@RequestBody OrderDto orderDto) {
-    orderService.addOrder(orderDto);
-    return ResponseEntity.ok("Order created");
+        orderService.addOrder(orderDto);
+        return ResponseEntity.ok("Order created");
+    }
 
+    @GetMapping("/orders/payments")
+    public ResponseEntity<OrderService.PaymentStatusResponse> getOrderPayments() {
+        return ResponseEntity.ok(orderService.getPaymentStatus());
     }
 }

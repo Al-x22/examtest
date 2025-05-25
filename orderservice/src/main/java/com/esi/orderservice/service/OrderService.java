@@ -3,7 +3,8 @@ package com.esi.orderservice.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.esi.orderservice.dto.DeliveryDto;
+import lombok.*;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -14,18 +15,21 @@ import com.esi.orderservice.model.OrderStatus;
 import com.esi.orderservice.model.PaymentStatus;
 import com.esi.orderservice.repository.OrderRepository;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
     private final KafkaTemplate<String, OrderDto> kafkaTemplate;
+    private final WebClient webClient = WebClient.builder()
+            .baseUrl("http://localhost:8083")
+            .build();
+
 
     public   List<OrderDto> getAllOrders(){
         List<Order> orders =  new ArrayList<>();
@@ -69,18 +73,41 @@ public class OrderService {
     }
 
 /* Task 4   */
-        @KafkaListener(topics = "paymentTopic", groupId = "orderPaymentGroup" )
-        public void updatePaymentinfo(OrderDto orderDto){
-            Order order = Order.builder()
-            .id(orderDto.getId())
-            .userId(orderDto.getUserId())
-            .price(orderDto.getPrice())
-            .productId(orderDto.getProductId())
-            .orderStatus(orderDto.getOrderStatus())
-            .paymentStatus(orderDto.getPaymentStatus())
-            .build();
-            orderRepository.save(order);
+    @KafkaListener(topics = "paymentTopic", groupId = "orderPaymentGroup" )
+    public void updatePaymentinfo(OrderDto orderDto){
+        Order order = Order.builder()
+        .id(orderDto.getId())
+        .userId(orderDto.getUserId())
+        .price(orderDto.getPrice())
+        .productId(orderDto.getProductId())
+        .orderStatus(orderDto.getOrderStatus())
+        .paymentStatus(orderDto.getPaymentStatus())
+        .build();
+        orderRepository.save(order);
         log.info("Order {} payment status updated", order.getId());
-        }
-/* Task 4   */
+    }
+
+    @KafkaListener(topics = "deliveryCreatedTopic", groupId = "orderDeliveryGroup" )
+    public void updateDeliveryInfo(DeliveryDto deliveryDto) {
+        log.info("Delivery status updated {}", deliveryDto.getId());
+    }
+
+
+    public PaymentStatusResponse getPaymentStatus() {
+        PaymentStatusResponse response = webClient.get()
+                .uri("http://localhost:8083/api/payments")
+                .retrieve()
+                .bodyToMono(PaymentStatusResponse.class)
+                .block();
+        return response;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @Builder
+    public  static class PaymentStatusResponse {
+        private String status;
+        private String message;
+    }
+    /* Task 4   */
 }
